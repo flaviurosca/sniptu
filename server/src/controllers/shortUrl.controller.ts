@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import UrlModel from "../model/shortUrl.model";
 import mongoose from "mongoose";
+import normalizeUrl from "normalize-url";
 
 type Controller = (
   req: Request,
@@ -21,7 +22,7 @@ type HttpError = Error & { status?: number };
  * @route POST /api/urls
  */
 export const createUrl: Controller = async (req, res, next) => {
-  const { fullUrl } = req.body;
+  let { fullUrl } = req.body;
 
   if (!fullUrl || typeof fullUrl !== "string") {
     const error: HttpError = new Error("Invalid URL");
@@ -30,6 +31,14 @@ export const createUrl: Controller = async (req, res, next) => {
   }
 
   try {
+    fullUrl = normalizeUrl(fullUrl, {
+      stripWWW: false,
+      removeTrailingSlash: true,
+      forceHttps: false,
+    })
+      .trim()
+      .toLowerCase();
+
     new URL(fullUrl);
   } catch {
     const error: HttpError = new Error("Invalid URL format");
