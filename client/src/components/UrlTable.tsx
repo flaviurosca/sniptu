@@ -1,12 +1,14 @@
 import { Link } from "react-router";
 import type { UrlData } from "../types";
 import { serverUrl } from "../utils/constants";
+import axios from "axios";
 
 type UrlTableProps = {
   urlData: UrlData[];
+  fetchTableData: () => void;
 };
 
-const UrlTable = ({ urlData }: UrlTableProps) => {
+const UrlTable = ({ urlData, fetchTableData }: UrlTableProps) => {
   if (!urlData || urlData.length === 0) {
     return <div className="text-white text-center py-4">Loading...</div>;
   }
@@ -37,7 +39,10 @@ const UrlTable = ({ urlData }: UrlTableProps) => {
 
         <td className="px-6 py-3">
           <div className="flex place-content-between">
-            <div className="cursor-pointer px-2">
+            <div
+              className="cursor-pointer px-2"
+              onClick={() => handleCopyToClipboard(item.shortUrl)}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -57,7 +62,10 @@ const UrlTable = ({ urlData }: UrlTableProps) => {
               </svg>
             </div>
 
-            <div className="cursor-pointer px-2">
+            <div
+              className="cursor-pointer px-2"
+              onClick={() => handleDeleteUrl(item._id)}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -75,6 +83,24 @@ const UrlTable = ({ urlData }: UrlTableProps) => {
         </td>
       </tr>
     ));
+
+  const handleCopyToClipboard = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(`${serverUrl}/urls/${url}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDeleteUrl = async (id: string) => {
+    try {
+      await axios.delete(`${serverUrl}/urls/${id}`);
+
+      fetchTableData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="container mx-auto pt-2 pb-10">

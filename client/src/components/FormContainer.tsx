@@ -2,7 +2,11 @@ import axios from "axios";
 import { useState } from "react";
 import { serverUrl } from "../utils/constants";
 
-const FormContainer = () => {
+type FormContainerProps = {
+  fetchTableData: () => void;
+};
+
+const FormContainer = ({ fetchTableData }: FormContainerProps) => {
   const [fullUrl, setFullUrl] = useState<string>("");
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -16,7 +20,9 @@ const FormContainer = () => {
       await axios.post(`${serverUrl}/urls`, {
         fullUrl: fullUrl,
       });
+
       setFullUrl("");
+      fetchTableData();
     } catch (error) {
       console.log(error);
     }

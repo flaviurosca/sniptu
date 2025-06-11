@@ -19,8 +19,8 @@ const Container = () => {
 
   return (
     <>
-      <FormContainer />
-      <UrlTable urlData={urlData} />
+      <FormContainer fetchTableData={fetchTableData} />
+      <UrlTable urlData={urlData} fetchTableData={fetchTableData} />
     </>
   );
 };
